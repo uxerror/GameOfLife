@@ -2,42 +2,51 @@
 
 namespace GameOfLife.View;
 
-public class MapView()
+public class GridView()
 {
-    public delegate void InitializeMapModelAction(int lengthAbscissa, int lengthOrdinate);
-    public delegate void InitializeInitialMapAction(int state);
-    public delegate void UpdateCellMapAction(int generations);
-    public delegate void InitializeCustomStateAction(int abscissaPosition, int ordinatePosition);
-    public event InitializeMapModelAction? OnInitializeMapModel;
-    public event InitializeInitialMapAction? OnInitializeInitialMap;
-    public event UpdateCellMapAction? OnUpdateCellMap;
+    public delegate void InitializeGridModelAction(int rows, int cols);
+    public delegate void InitializeInitialGridAction(int state);
+    public delegate void UpdateCellGridAction();
+    public delegate void InitializeCustomStateAction(int rows, int cols);
+    public event InitializeGridModelAction? OnInitializeGridModel;
+    public event InitializeInitialGridAction? OnInitializeInitialGrid;
+    public event UpdateCellGridAction? OnUpdateCellGrid;
     public event InitializeCustomStateAction? OnInitializeCustomState;
     public void Initialization()
     {
         var windowWidth = Console.WindowWidth;
         var windowHeight = Console.WindowHeight;
         var state = MenuView();
-        Console.Write($"Введите значение длины карты по абсциссе({windowWidth}): ");
-        var lengthAbscissa = Convert.ToInt32(Console.ReadLine());
-        Console.Write($"Введите значение длины карты по ординате({windowHeight}): ");
-        var lengthOrdinate = Convert.ToInt32(Console.ReadLine());
+        Console.Write($"Введите значение длины карты по оси y({windowHeight}): ");
+        var rows = Convert.ToInt32(Console.ReadLine());
+        Console.Write($"Введите значение длины карты по оси x({windowWidth % 2}): ");
+        var cols = Convert.ToInt32(Console.ReadLine());
         Console.Write("Введите значение колличества поколений: ");
         var generations = Convert.ToInt32(Console.ReadLine());
-        OnInitializeMapModel?.Invoke(lengthAbscissa, lengthOrdinate);
+        OnInitializeGridModel?.Invoke(rows, cols);
         if (state == 0)
         {
-            OnInitializeInitialMap?.Invoke(state);
-            OnUpdateCellMap?.Invoke(generations);
+            OnInitializeInitialGrid?.Invoke(state);
         }
         if (state == 1)
         {
-            OnInitializeInitialMap?.Invoke(state);
-            CustomCellMapView();
-            OnUpdateCellMap?.Invoke(generations); 
+            OnInitializeInitialGrid?.Invoke(state);
+            CustomCellGridView();
+        }
+
+        Update();
+    }
+
+    public void Update()
+    {
+        while (true)
+        {
+            Console.ReadKey();
+            OnUpdateCellGrid?.Invoke();
         }
     }
 
-    public void UpdateMapView(Cell[,] cellMap)
+    public void UpdateGridView(Cell[,] cellMap)
     {
         var lengthAbscissa = cellMap.GetLength(0);
         var lengthOrdinate = cellMap.GetLength(1);
@@ -54,23 +63,23 @@ public class MapView()
         }
     }
 
-    private void CustomCellMapView()
+    private void CustomCellGridView()
     {
-        var abscissaPosition = 0;
-        var ordinatePosition = 0;
+        var r = 0;
+        var y = 0;
 
         while (true)
         {
             ConsoleKeyInfo consoleKeyInfo = Console.ReadKey(true);
             if (consoleKeyInfo.Key == ConsoleKey.UpArrow)
             {
-                abscissaPosition++;
-                OnInitializeCustomState?.Invoke(ordinatePosition, abscissaPosition);
+                r++;
+                OnInitializeCustomState?.Invoke(y, r);
             }
             if (consoleKeyInfo.Key == ConsoleKey.DownArrow)
             {
-                abscissaPosition--;
-                OnInitializeCustomState?.Invoke(ordinatePosition, abscissaPosition);
+                r--;
+                OnInitializeCustomState?.Invoke(y, r);
             }
 
             if (consoleKeyInfo.Key == ConsoleKey.Enter)

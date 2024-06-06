@@ -6,8 +6,8 @@ public class Grid
 {
     public int Rows;
     public int Cols;
-    public Cell[,] InitialCellMap;
-    public Cell[,] CurrentCellMap;
-    public List<Cell[,]> GenerationsCellMapList = [];
+    public Cell[,] InitialCellGrid;
+    public Cell[,] CurrentCellGrid;
+    public List<Cell[,]> GenerationsCellGridList = [];
     public List<int[,]> InitialStateList;
 }
